@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🧠 Memory Flip Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #f0f4f8;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      color: #333;
+    }
+    #gameBoard {
+      display: grid;
+      grid-template-columns: repeat(4, 80px);
+      grid-gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .card {
+      width: 80px;
+      height: 80px;
+      background: #ccc;
+      font-size: 32px;
+      line-height: 80px;
+      color: #fff;
+      border-radius: 10px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .card.flipped {
+      background: #1e90ff;
+    }
+    #winMessage {
+      margin-top: 20px;
+      font-size: 20px;
+      color: green;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🧠 Memory Flip Game</h1>
+
+  <!-- 🟡 PLACEHOLDER FOR GOOGLE ADSENSE CODE -->
+  <!-- Paste your AdSense code here once approved -->
+  <!-- Example: -->
+  <!-- 
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+     crossorigin="anonymous"></script>
+  <ins class="adsbygoogle"
+       style="display:block"
+       data-ad-client="ca-pub-XXXXXXXXXXXX"
+       data-ad-slot="YYYYYYYYYY"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script> 
+  -->
+
+  <div id="gameBoard"></div>
+  <div id="winMessage"></div>
+
+  <script>
+    const emojis = ['🐶', '🐱', '🦁', '🐸', '🐵', '🐰', '🐯', '🦊'];
+    let cards = [...emojis, ...emojis]; // duplicate emojis
+    let flipped = [];
+    let matched = [];
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function createBoard() {
+      shuffle(cards);
+      const board = document.getElementById('gameBoard');
+      board.innerHTML = '';
+      cards.forEach((emoji, i) => {
+        const card = document.createElement('div');
+        card.classList.add('card');
+        card.dataset.index = i;
+        card.addEventListener('click', flipCard);
+        board.appendChild(card);
+      });
+    }
+
+    function flipCard() {
+      const index = this.dataset.index;
+      if (flipped.includes(index) || matched.includes(index)) return;
+
+      this.classList.add('flipped');
+      this.textContent = cards[index];
+      flipped.push(index);
+
+      if (flipped.length === 2) {
+        const [i1, i2] = flipped;
+        if (cards[i1] === cards[i2]) {
+          matched.push(i1, i2);
+          flipped = [];
+          if (matched.length === cards.length) {
+            document.getElementById('winMessage').textContent = "🎉 You Win! Thanks for playing!";
+          }
+        } else {
+          setTimeout(() => {
+            document.querySelector(`[data-index='${i1}']`).classList.remove('flipped');
+            document.querySelector(`[data-index='${i2}']`).classList.remove('flipped');
+            document.querySelector(`[data-index='${i1}']`).textContent = '';
+            document.querySelector(`[data-index='${i2}']`).textContent = '';
+            flipped = [];
+          }, 1000);
+        }
+      }
+    }
+
+    createBoard();
+  </script>
+</body>
+</html>
